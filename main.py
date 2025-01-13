@@ -4,8 +4,16 @@ import sys
 
 # Initialize pygame
 pygame.init()
+pygame.mixer.init()
 
-# Screen dimensions
+# Start background music in a non-blocking way
+pygame.mixer.Sound("assets/bgmusic.mp3").play()
+pygame.mixer.music.load("assets/bgmusic.mp3")
+pygame.mixer.music.set_volume(1.0)  # Set volume to 100%
+
+pygame.mixer.music.play(-1)  # Loop the music
+
+
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Dodge the bullets")
@@ -85,14 +93,13 @@ def detect_collision(pos1, size1, pos2, size2):
 
 def show_game_over_screen():
     """Display game over message and prompt to replay."""
-    pygame.mixer.music.stop()  # Stop any background music
     game_over_text = large_font.render("Game Over", True, RED)
     replay_text = font.render("Press R to replay", True, WHITE)
-    best_score_text = font.render(f"Best Score: {best_score}", True, (255,255,255))
+    best_score_text = font.render(f"Best Score: {best_score}", True, (255, 255, 255))
     
-    screen.blit(game_over_text, (WIDTH//2 - 150, HEIGHT//2 - 50))
-    screen.blit(replay_text, (WIDTH//2 - 100, HEIGHT//2 + 50))
-    screen.blit(best_score_text, (WIDTH//2 - 100, HEIGHT//2 + 100))
+    screen.blit(game_over_text, (WIDTH // 2 - 150, HEIGHT // 2 - 50))
+    screen.blit(replay_text, (WIDTH // 2 - 100, HEIGHT // 2 + 50))
+    screen.blit(best_score_text, (WIDTH // 2 - 100, HEIGHT // 2 + 100))
     pygame.display.update()
 
     # Wait for player to press 'R' to replay or 'Q' to quit
@@ -110,18 +117,17 @@ def show_game_over_screen():
 
 def game_instructions():
     """Display game instructions."""
-    pygame.mixer.music.stop()  # Stop any background music
     instructions_text = large_font.render("Instructions", True, BLUE)
     instruction1 = font.render("Use Arrow Keys to Move", True, RED)
     instruction2 = font.render("Press Spacebar to Shoot", True, RED)
     instruction3 = font.render("Avoid Enemies and Dodge Bullets", True, RED)
     start_text = font.render("Press Space to Start", True, BLUE)
 
-    screen.blit(instructions_text, (WIDTH//2 - 150, HEIGHT//2 - 100))
-    screen.blit(instruction1, (WIDTH//2 - 150, HEIGHT//2 - 50))
-    screen.blit(instruction2, (WIDTH//2 - 150, HEIGHT//2))
-    screen.blit(instruction3, (WIDTH//2 - 150, HEIGHT//2 + 50))
-    screen.blit(start_text, (WIDTH//2 - 150, HEIGHT//2 + 100))
+    screen.blit(instructions_text, (WIDTH // 2 - 150, HEIGHT // 2 - 100))
+    screen.blit(instruction1, (WIDTH // 2 - 150, HEIGHT // 2 - 50))
+    screen.blit(instruction2, (WIDTH // 2 - 150, HEIGHT // 2))
+    screen.blit(instruction3, (WIDTH // 2 - 150, HEIGHT // 2 + 50))
+    screen.blit(start_text, (WIDTH // 2 - 150, HEIGHT // 2 + 100))
     pygame.display.update()
 
     # Wait for player to press 'Space' to start the game
@@ -281,7 +287,7 @@ while start_page:
             pygame.quit()
             sys.exit()
 
-# Now, clear the screen and show the instructions
+# Show instructions before starting the game
 screen.fill(WHITE)  # Ensure the screen is cleared before showing instructions
 draw_background(page="instructions")  # Use light blue background for the instructions page
 game_instructions()  # Show the game instructions
