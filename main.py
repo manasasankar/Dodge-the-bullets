@@ -55,9 +55,6 @@ bullet_size = (10, 20)
 score = 0
 best_score = 0  # Variable to store the best score
 
-# Music Settings
-music_enabled = True  # Default music is enabled
-
 # Load the best score from a file
 def load_best_score():
     global best_score
@@ -73,21 +70,6 @@ def save_best_score():
     with open("best_score.txt", "w") as file:
         file.write(str(best_score))
 
-# Music Functions
-def play_background_music():
-    if music_enabled:
-        pygame.mixer.music.load("assets/music/background.mp3")
-        pygame.mixer.music.play(-1)  # Loop music indefinitely
-
-def stop_music():
-    pygame.mixer.music.stop()
-
-def play_game_over_music():
-    if music_enabled:
-        pygame.mixer.music.load("assets/music/game_over.mp3")
-        pygame.mixer.music.play()
-
-# Game functions
 def detect_collision(pos1, size1, pos2, size2):
     """Detects collision between two rectangles."""
     x1, y1 = pos1
@@ -101,8 +83,7 @@ def detect_collision(pos1, size1, pos2, size2):
 
 def show_game_over_screen():
     """Display game over message and prompt to replay."""
-    stop_music()  # Stop the background music
-    play_game_over_music()  # Play game over music
+    pygame.mixer.music.stop()  # Stop any background music
     game_over_text = large_font.render("Game Over", True, RED)
     replay_text = font.render("Press R to replay", True, BLUE)
     best_score_text = font.render(f"Best Score: {best_score}", True, BLACK)
@@ -125,90 +106,20 @@ def show_game_over_screen():
                 pygame.quit()
                 sys.exit()
 
-def main_start_page():
-    """Start page with a stylish title and description."""
-    screen.fill(LIGHT_PURPLE)  # Light Purple background
-    title_text = large_font.render("Dodge and Shoot the Blocks", True, BLUE)
-    description_text = font.render("Avoid enemies and shoot to score.", True, BLACK)
-    start_button_text = font.render("Press Space to Start", True, RED)
-    settings_button_text = font.render("Settings", True, BLACK)
-
-    # Draw title and description
-    screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 100))
-    screen.blit(description_text, (WIDTH//2 - description_text.get_width()//2, HEIGHT//2 - 50))
-    
-    # Draw settings button
-    screen.blit(settings_button_text, (WIDTH//2 - settings_button_text.get_width()//2, HEIGHT//2 + 80))
-    screen.blit(start_button_text, (WIDTH//2 - start_button_text.get_width()//2, HEIGHT//2 + 120))
-
-    pygame.display.update()
-
-    # Wait for player input
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    return  # Start the game
-                if event.key == pygame.K_s:
-                    show_settings()  # Show settings page
-            elif event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-def show_settings():
-    """Show settings for music and instructions."""
-    global music_enabled
-
-    # Settings screen background
-    screen.fill(LIGHT_BLUE)
-    
-    settings_title = large_font.render("Settings", True, BLUE)
-    music_text = font.render(f"Music: {'On' if music_enabled else 'Off'}", True, BLACK)
-    help_text = font.render("Press H for Help (Instructions)", True, BLACK)
-    back_text = font.render("Press B to go Back", True, RED)
-
-    # Draw settings text
-    screen.blit(settings_title, (WIDTH//2 - settings_title.get_width()//2, HEIGHT//2 - 100))
-    screen.blit(music_text, (WIDTH//2 - music_text.get_width()//2, HEIGHT//2 - 50))
-    screen.blit(help_text, (WIDTH//2 - help_text.get_width()//2, HEIGHT//2))
-    screen.blit(back_text, (WIDTH//2 - back_text.get_width()//2, HEIGHT//2 + 50))
-
-    pygame.display.update()
-
-    # Wait for player input
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_b:
-                    return  # Go back to the start page
-                if event.key == pygame.K_h:
-                    game_instructions()  # Show the instructions
-                if event.key == pygame.K_m:
-                    music_enabled = not music_enabled  # Toggle music
-                    if music_enabled:
-                        play_background_music()
-                    else:
-                        stop_music()
-
-            elif event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
 def game_instructions():
-    """Show game instructions."""
-    instructions_title = large_font.render("Game Instructions", True, BLUE)
-    instruction1 = font.render("1. Use Arrow Keys to Move", True, BLACK)
-    instruction2 = font.render("2. Press Spacebar to Shoot", True, BLACK)
-    instruction3 = font.render("3. Avoid Enemies and Dodge Bullets", True, BLACK)
+    """Display game instructions."""
+    pygame.mixer.music.stop()  # Stop any background music
+    instructions_text = large_font.render("Instructions", True, BLUE)
+    instruction1 = font.render("Use Arrow Keys to Move", True, BLACK)
+    instruction2 = font.render("Press Spacebar to Shoot", True, BLACK)
+    instruction3 = font.render("Avoid Enemies and Dodge Bullets", True, BLACK)
     start_text = font.render("Press Space to Start", True, RED)
 
-    screen.fill(LIGHT_BLUE)  # Light Blue background for instructions
-    screen.blit(instructions_title, (WIDTH//2 - instructions_title.get_width()//2, HEIGHT//2 - 100))
-    screen.blit(instruction1, (WIDTH//2 - instruction1.get_width()//2, HEIGHT//2 - 50))
-    screen.blit(instruction2, (WIDTH//2 - instruction2.get_width()//2, HEIGHT//2))
-    screen.blit(instruction3, (WIDTH//2 - instruction3.get_width()//2, HEIGHT//2 + 50))
-    screen.blit(start_text, (WIDTH//2 - start_text.get_width()//2, HEIGHT//2 + 120))
-
+    screen.blit(instructions_text, (WIDTH//2 - 150, HEIGHT//2 - 100))
+    screen.blit(instruction1, (WIDTH//2 - 150, HEIGHT//2 - 50))
+    screen.blit(instruction2, (WIDTH//2 - 150, HEIGHT//2))
+    screen.blit(instruction3, (WIDTH//2 - 150, HEIGHT//2 + 50))
+    screen.blit(start_text, (WIDTH//2 - 150, HEIGHT//2 + 100))
     pygame.display.update()
 
     # Wait for player to press 'Space' to start the game
@@ -216,15 +127,155 @@ def game_instructions():
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    return  # Start the game
+                    return True
             elif event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-# Main loop
-load_best_score()
-play_background_music()  # Start the background music
+def update_enemies():
+    global score  # Access the global score variable
+    # Update positions of existing enemies
+    for enemy in enemies[:]:
+        enemy[1] += enemy_speed  # Move enemy downward
+        if enemy[1] > HEIGHT:
+            # Reset to a random x-coordinate and reuse the image
+            enemy[0] = random.randint(0, WIDTH - enemy_size)  # Random x position
+            enemy[1] = 0  # Reset y-coordinate to the top
+            score += 1  # Increase score when an enemy goes off-screen
 
+    # Add new enemies after every 5 points, but ensure the total enemies are <= 7
+    if score % 5 == 0 and score != 0 and len(enemies) < 7:
+        available_enemies = [img for img in enemy_imgs if img not in [e[2] for e in enemies]]
+
+        # If there are available enemies to add, choose one; otherwise, reset an existing enemy
+        if available_enemies:
+            enemy_type = random.choice(available_enemies)
+            enemies.append([random.randint(0, WIDTH - enemy_size), 0, enemy_type])
+        else:
+            # If no unique enemies are left, reset one of the existing enemies
+            existing_enemy = random.choice(enemies)
+            existing_enemy[0] = random.randint(0, WIDTH - enemy_size)
+            existing_enemy[1] = 0  # Reset y-coordinate to the top
+            existing_enemy[2] = random.choice(enemy_imgs)  # Randomly select a new image for the enemy
+
+def draw_background(page="game"):
+    """Draw background based on the current page."""
+    if page == "start":
+        screen.fill(LIGHT_PURPLE)  # Light Purple background for the start page
+    elif page == "instructions":
+        screen.fill(LIGHT_BLUE)  # Light Blue background for the instructions page
+    else:
+        screen.fill(LIGHT_GRAY)  # Light Gray background for the game page
+
+def main_game():
+    global score, enemies, bullets, player_pos, best_score
+
+    # Reset game variables
+    score = 0
+    enemies = [[random.randint(0, WIDTH - enemy_size), 0, random.choice(enemy_imgs)]]  # Assign random image
+    bullets = []
+    player_pos = [WIDTH // 2, HEIGHT - 2 * player_size]
+
+    # Game loop
+    game_over = False
+    while not game_over:
+        draw_background(page="game")  # Light gray background for the game page
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        # Player movement
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and player_pos[0] > 0:
+            player_pos[0] -= 10
+        if keys[pygame.K_RIGHT] and player_pos[0] < WIDTH - player_size:
+            player_pos[0] += 10
+
+        # Shoot bullets
+        if keys[pygame.K_SPACE]:
+            bullets.append([player_pos[0] + player_size // 2 - bullet_size[0] // 2, player_pos[1]])
+
+        # Update bullet positions and enemies
+        bullets = [[b[0], b[1] - bullet_speed] for b in bullets if b[1] > 0]
+        update_enemies()  # Update enemy positions
+        
+        # Add new enemies after every 5 points
+        if score % 5 == 0 and score != 0 and len(enemies) < 7:
+            enemies.append([random.randint(0, WIDTH - enemy_size), 0, random.choice(enemy_imgs)])
+
+        # Check collisions between bullets and enemies
+        for bullet in bullets[:]:
+            for enemy in enemies[:]:
+                if detect_collision(bullet, bullet_size, (enemy[0], enemy[1]), (enemy_size, enemy_size)):  # Pass only the position (x, y)
+                    bullets.remove(bullet)
+                    enemies.remove(enemy)
+                    enemies.append([random.randint(0, WIDTH - enemy_size), 0, random.choice(enemy_imgs)])  # Assign a random image to the new enemy
+                    score += 5
+                    break
+
+        # Collision detection between player and enemies
+        for enemy in enemies:
+            if detect_collision(player_pos, (player_size, player_size), (enemy[0], enemy[1]), (enemy_size, enemy_size)):  # Use only position (x, y)
+                game_over = True
+                break  # Exit the loop once the game over condition is met
+
+        # Draw player, enemies, and bullets using images
+        screen.blit(player_img, (player_pos[0], player_pos[1]))  # Draw the player image
+        for enemy in enemies:
+            screen.blit(enemy[2], (enemy[0], enemy[1]))  # Draw the specific enemy image (stored in enemy[2])
+        for bullet in bullets:
+            pygame.draw.rect(screen, YELLOW, (bullet[0], bullet[1], bullet_size[0], bullet_size[1]))
+
+        # Show score
+        text = font.render(f"Score: {score}", True, (0, 0, 0))
+        screen.blit(text, (10, 10))
+
+        pygame.display.update()
+        clock.tick(30)
+
+    # Update the best score if necessary
+    if score > best_score:
+        best_score = score
+        save_best_score()
+
+    # Display game over screen and wait for player input
+    return show_game_over_screen()
+
+# Load the best score from the file
+load_best_score()
+
+# Main loop for start page
+start_page = True
+while start_page:
+    draw_background(page="start")  # Use light purple background for the start page
+    pygame.mixer.music.stop()  # Stop any background music
+
+    # Display start page with instructions
+    start_text = large_font.render("Dodge the Bullets!", True, BLUE)
+    start_button = font.render("Press Space to Start", True, RED)
+
+    screen.blit(start_text, (WIDTH//2 - 150, HEIGHT//2 - 50))
+    screen.blit(start_button, (WIDTH//2 - 100, HEIGHT//2 + 50))
+    pygame.display.update()
+
+    # Wait for player to press 'Space' to start the game
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                start_page = False  # Exit the loop when space is pressed
+                break
+        elif event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+# Now, clear the screen and show the instructions
+screen.fill(WHITE)  # Ensure the screen is cleared before showing instructions
+draw_background(page="instructions")  # Use light blue background for the instructions page
+game_instructions()  # Show the game instructions
+
+# Start the game
 while True:
-    main_start_page()  # Show start page
-    # Main game logic goes here...
+    if not main_game():
+        break  # Restart the game loop after game over
