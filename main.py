@@ -8,7 +8,7 @@ pygame.init()
 # Screen dimensions
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Dodge and Shoot the Blocks")
+pygame.display.set_caption("Dodge the bullets")
 
 # Colors
 WHITE = (255, 255, 255)
@@ -36,6 +36,8 @@ enemy_imgs = [
     pygame.image.load("assets/enemy/spikehead.png")
 ]
 background_img = pygame.image.load("assets/Background/Purple.png")
+brown_bg_img = pygame.image.load("assets/Background/Brown.png")  # Load Brown.png
+bullet_img = pygame.image.load("assets/bullet.png")  # Load bullet image
 
 # Player settings
 player_size = 50
@@ -43,7 +45,7 @@ player_pos = [WIDTH // 2, HEIGHT - 2 * player_size]
 
 # Enemy settings
 enemy_size = 50
-enemy_speed = 10
+enemy_speed = 7
 enemies = [[random.randint(0, WIDTH - enemy_size), 0, random.choice(enemy_imgs)]]  # Start with one enemy
 
 # Bullets
@@ -85,8 +87,8 @@ def show_game_over_screen():
     """Display game over message and prompt to replay."""
     pygame.mixer.music.stop()  # Stop any background music
     game_over_text = large_font.render("Game Over", True, RED)
-    replay_text = font.render("Press R to replay", True, BLUE)
-    best_score_text = font.render(f"Best Score: {best_score}", True, BLACK)
+    replay_text = font.render("Press R to replay", True, WHITE)
+    best_score_text = font.render(f"Best Score: {best_score}", True, (255,255,255))
     
     screen.blit(game_over_text, (WIDTH//2 - 150, HEIGHT//2 - 50))
     screen.blit(replay_text, (WIDTH//2 - 100, HEIGHT//2 + 50))
@@ -110,10 +112,10 @@ def game_instructions():
     """Display game instructions."""
     pygame.mixer.music.stop()  # Stop any background music
     instructions_text = large_font.render("Instructions", True, BLUE)
-    instruction1 = font.render("Use Arrow Keys to Move", True, BLACK)
-    instruction2 = font.render("Press Spacebar to Shoot", True, BLACK)
-    instruction3 = font.render("Avoid Enemies and Dodge Bullets", True, BLACK)
-    start_text = font.render("Press Space to Start", True, RED)
+    instruction1 = font.render("Use Arrow Keys to Move", True, RED)
+    instruction2 = font.render("Press Spacebar to Shoot", True, RED)
+    instruction3 = font.render("Avoid Enemies and Dodge Bullets", True, RED)
+    start_text = font.render("Press Space to Start", True, BLUE)
 
     screen.blit(instructions_text, (WIDTH//2 - 150, HEIGHT//2 - 100))
     screen.blit(instruction1, (WIDTH//2 - 150, HEIGHT//2 - 50))
@@ -143,8 +145,11 @@ def update_enemies():
             enemy[1] = 0  # Reset y-coordinate to the top
             score += 1  # Increase score when an enemy goes off-screen
 
-    # Add new enemies after every 5 points, but ensure the total enemies are <= 7
-    if score % 5 == 0 and score != 0 and len(enemies) < 7:
+    # Set max enemy count depending on the score
+    max_enemies = 10 if score >= 3 else 7  # Max 10 enemies after score reaches 3
+
+    # Add new enemies after every 5 points, but ensure the total enemies do not exceed max_enemies
+    if score % 5 == 0 and score != 0 and len(enemies) < max_enemies:
         available_enemies = [img for img in enemy_imgs if img not in [e[2] for e in enemies]]
 
         # If there are available enemies to add, choose one; otherwise, reset an existing enemy
@@ -158,14 +163,13 @@ def update_enemies():
             existing_enemy[1] = 0  # Reset y-coordinate to the top
             existing_enemy[2] = random.choice(enemy_imgs)  # Randomly select a new image for the enemy
 
+
 def draw_background(page="game"):
     """Draw background based on the current page."""
-    if page == "start":
-        screen.fill(LIGHT_PURPLE)  # Light Purple background for the start page
-    elif page == "instructions":
-        screen.fill(LIGHT_BLUE)  # Light Blue background for the instructions page
+    if page == "start" or page == "instructions":
+        screen.fill(BLACK)  # Black background for start and instructions pages
     else:
-        screen.fill(LIGHT_GRAY)  # Light Gray background for the game page
+        screen.fill(BLACK)  # Use black background for the game page
 
 def main_game():
     global score, enemies, bullets, player_pos, best_score
@@ -176,10 +180,14 @@ def main_game():
     bullets = []
     player_pos = [WIDTH // 2, HEIGHT - 2 * player_size]
 
+    # Bullet firing interval (in milliseconds)
+    bullet_fire_interval = 300  # Adjust this value for desired gap between bullets
+    last_bullet_time = 0  # To track the time of the last bullet fired
+
     # Game loop
     game_over = False
     while not game_over:
-        draw_background(page="game")  # Light gray background for the game page
+        draw_background(page="game")  # Use Brown.png background for the game page
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -193,9 +201,11 @@ def main_game():
         if keys[pygame.K_RIGHT] and player_pos[0] < WIDTH - player_size:
             player_pos[0] += 10
 
-        # Shoot bullets
-        if keys[pygame.K_SPACE]:
+        # Bullet firing logic with interval
+        current_time = pygame.time.get_ticks()  # Get the current time in milliseconds
+        if keys[pygame.K_SPACE] and current_time - last_bullet_time >= bullet_fire_interval:
             bullets.append([player_pos[0] + player_size // 2 - bullet_size[0] // 2, player_pos[1]])
+            last_bullet_time = current_time  # Update the last bullet time
 
         # Update bullet positions and enemies
         bullets = [[b[0], b[1] - bullet_speed] for b in bullets if b[1] > 0]
@@ -226,10 +236,10 @@ def main_game():
         for enemy in enemies:
             screen.blit(enemy[2], (enemy[0], enemy[1]))  # Draw the specific enemy image (stored in enemy[2])
         for bullet in bullets:
-            pygame.draw.rect(screen, YELLOW, (bullet[0], bullet[1], bullet_size[0], bullet_size[1]))
+            screen.blit(bullet_img, (bullet[0], bullet[1]))  # Draw the bullet image
 
         # Show score
-        text = font.render(f"Score: {score}", True, (0, 0, 0))
+        text = font.render(f"Score: {score}", True, (255,255,255))
         screen.blit(text, (10, 10))
 
         pygame.display.update()
@@ -242,6 +252,7 @@ def main_game():
 
     # Display game over screen and wait for player input
     return show_game_over_screen()
+
 
 # Load the best score from the file
 load_best_score()
