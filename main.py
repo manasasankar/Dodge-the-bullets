@@ -6,6 +6,8 @@ import sys
 pygame.init()
 pygame.mixer.init()
 
+
+
 # Start background music in a non-blocking way
 pygame.mixer.Sound("assets/bgmusic.mp3").play()
 pygame.mixer.music.load("assets/bgmusic.mp3")
@@ -142,32 +144,26 @@ def game_instructions():
 
 def update_enemies():
     global score  # Access the global score variable
+    
     # Update positions of existing enemies
     for enemy in enemies[:]:
         enemy[1] += enemy_speed  # Move enemy downward
         if enemy[1] > HEIGHT:
-            # Reset to a random x-coordinate and reuse the image
+            # When an enemy goes off-screen, reset it to a random x-coordinate and use a new image
             enemy[0] = random.randint(0, WIDTH - enemy_size)  # Random x position
             enemy[1] = 0  # Reset y-coordinate to the top
+            enemy[2] = random.choice(enemy_imgs)  # Assign a new image
             score += 1  # Increase score when an enemy goes off-screen
 
     # Set max enemy count depending on the score
     max_enemies = 10 if score >= 3 else 7  # Max 10 enemies after score reaches 3
 
     # Add new enemies after every 5 points, but ensure the total enemies do not exceed max_enemies
-    if score % 5 == 0 and score != 0 and len(enemies) < max_enemies:
-        available_enemies = [img for img in enemy_imgs if img not in [e[2] for e in enemies]]
-
-        # If there are available enemies to add, choose one; otherwise, reset an existing enemy
-        if available_enemies:
-            enemy_type = random.choice(available_enemies)
-            enemies.append([random.randint(0, WIDTH - enemy_size), 0, enemy_type])
-        else:
-            # If no unique enemies are left, reset one of the existing enemies
-            existing_enemy = random.choice(enemies)
-            existing_enemy[0] = random.randint(0, WIDTH - enemy_size)
-            existing_enemy[1] = 0  # Reset y-coordinate to the top
-            existing_enemy[2] = random.choice(enemy_imgs)  # Randomly select a new image for the enemy
+    if score % 5 == 0 and score != 0:
+        # Ensure that we don't exceed the max_enemy count
+        if len(enemies) < max_enemies:
+            # Add a new enemy with a random position and random image
+            enemies.append([random.randint(0, WIDTH - enemy_size), 0, random.choice(enemy_imgs)])
 
 
 def draw_background(page="game"):
