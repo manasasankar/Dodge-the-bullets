@@ -6,14 +6,12 @@ import sys
 pygame.init()
 pygame.mixer.init()
 
+# Load music
+try:
+    pygame.mixer.Sound("assets/bgmusic.mp3").play(-1) # Replace with your file path
+except pygame.error as e:
+    print(f"Error loading music: {e}")
 
-
-# Start background music in a non-blocking way
-pygame.mixer.Sound("assets/bgmusic.mp3").play()
-pygame.mixer.music.load("assets/bgmusic.mp3")
-pygame.mixer.music.set_volume(1.0)  # Set volume to 100%
-
-pygame.mixer.music.play(-1)  # Loop the music
 
 
 WIDTH, HEIGHT = 800, 600

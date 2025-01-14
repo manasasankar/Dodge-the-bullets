@@ -44,11 +44,11 @@ Make sure the following files are present:
 ## Files
 
 - **`best_score.txt`:** Stores the highest score achieved across game sessions.
-- **`game.py`:** Main game code.
+- **`main.py`:** Main game code.
 
 ## Run the Game
 
 To play the game, simply run the Python script:
 
 ```bash
-python game.py
+python main.py
